@@ -1,0 +1,5 @@
+CWE = the average endemism of species found in that cell (including moving window)
+
+ Endemism: = How range restricted a species is. The more range restricted a species is the higher its endemism score is. E.g. restricted to one cell = endemism  score of 1, restricted to two cells = endemism score of 0.5 etc.
+
+ P_CWE is the results of a two tailed randomisation test for statistical significance. I.e. is the observed CWE value higher or lower than expected at random, given the number of genera found in that cell. A value of > 0.975 = significantly high and a value of < 0.025 = significantly low. In this randomisation process the number of species found in each cell is kept the same (as in the observed number of species in that cell) and the range of each species (number of cells occupied by a species) is kept the same as the observed range. So the only thing being changed is the locations at which each species is present.
