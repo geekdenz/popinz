@@ -84,7 +84,7 @@ angular.module("socially").controller("MapCtrl", function ($scope, $meteor) {
 					color: hsl
 				})
 			});
-      console.log(colval)
+      //console.log(colval)
 			feature.setStyle(style);
 		});
 
