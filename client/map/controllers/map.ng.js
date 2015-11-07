@@ -136,6 +136,7 @@ angular.module("socially").controller("MapCtrl", function ($scope, $meteor) {
 			var popDensity = feature.get('pop_density');
 			var resPop = feature.get('res_pop');
 			console.log('feature', popDensity, resPop);
+
 		});
 		map.getView().on('change:resolution', function (event, value) {
 			console.log('zoom', event.target.getZoom());
@@ -146,20 +147,20 @@ angular.module("socially").controller("MapCtrl", function ($scope, $meteor) {
 					$scope.hml.setRadius(9);
 					break;
         case 7:
-          $scope.hml.setBlur(20);
-          $scope.hml.setRadius(13);
+          $scope.hml.setBlur(40);
+          $scope.hml.setRadius(25);
           break;
         case 8:
-          $scope.hml.setBlur(20);
-          $scope.hml.setRadius(16);
+          $scope.hml.setBlur(80);
+          $scope.hml.setRadius(25);
           break;
         case 8:
-          $scope.hml.setBlur(20);
-          $scope.hml.setRadius(20);
+          $scope.hml.setBlur(160);
+          $scope.hml.setRadius(35);
           break;
         case 9:
-          $scope.hml.setBlur(20);
-          $scope.hml.setRadius(26);
+          $scope.hml.setBlur(320);
+          $scope.hml.setRadius(45);
           break;
 				default:
 					break;
