@@ -50,7 +50,8 @@ angular.module("socially").controller("MapCtrl", function ($scope, $meteor) {
 		});
 		*/
 		var popSource = new ol.source.Vector({
-			url: 'data/nz_simplified_3857.json',
+			//url: 'data/nz_simplified_3857.json',
+			url: 'data/population_density_meshblock-3857.geojson',
 			format: new ol.format.GeoJSON()
 		});
 		var popVector = new ol.layer.Vector({
@@ -62,8 +63,8 @@ angular.module("socially").controller("MapCtrl", function ($scope, $meteor) {
 			var feature = event.feature;
 			var popDensity = feature.get('pop_density');
 			var weight = popDensity / max;
-			var hue = Math.round(weight * 120);
-			var hsl = 'hsla('+ hue +', 100%, 47%, 1)';
+			var value = Math.round(weight * 20);
+			var hsl = 'hsla(15, '+ value +'%, 47%, 1)';
 			var style = new ol.style.Style({
 				fill: new ol.style.Fill({
 					color: hsl
