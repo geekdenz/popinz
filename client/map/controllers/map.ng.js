@@ -1,10 +1,10 @@
 angular.module("socially").controller("MapCtrl", function ($scope, $meteor) {
 	/*$scope.parties = $meteor.collection(Parties);
-	 
+
 	 $scope.remove = function (party) {
 	 $scope.parties.splice($scope.parties.indexOf(party), 1);
 	 };
-	 
+
 	 $scope.removeAll = function () {
 	 $scope.parties.remove();
 	 };
@@ -25,7 +25,7 @@ angular.module("socially").controller("MapCtrl", function ($scope, $meteor) {
 			opacity: 0.6,
 			blur: 5,
 			radius: 15,
-			name: 'Endemicity (Heatmap)',
+			name: 'Endemism (Heatmap)',
 			visible: false
 		});
 		source.on('addfeature', function (event) {
@@ -143,8 +143,24 @@ angular.module("socially").controller("MapCtrl", function ($scope, $meteor) {
 			switch (zoom) {
 				case 6:
 					$scope.hml.setBlur(20);
-					$scope.hml.setRadius(8);
+					$scope.hml.setRadius(9);
 					break;
+        case 7:
+          $scope.hml.setBlur(20);
+          $scope.hml.setRadius(13);
+          break;
+        case 8:
+          $scope.hml.setBlur(20);
+          $scope.hml.setRadius(16);
+          break;
+        case 8:
+          $scope.hml.setBlur(20);
+          $scope.hml.setRadius(20);
+          break;
+        case 9:
+          $scope.hml.setBlur(20);
+          $scope.hml.setRadius(26);
+          break;
 				default:
 					break;
 			}
