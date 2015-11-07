@@ -11,28 +11,80 @@ angular.module("socially").controller("MapCtrl", function ($scope, $meteor) {
 	 */
 	var parser = new ol.format.WMTSCapabilities();
 	var map;
-
 	$.ajax('WMTSCapabilities.xml').then(function (response) {
 		var result = parser.read(response);
 		var options = ol.source.WMTS.optionsFromCapabilities(result,
 				{layer: 'set-2', matrixSet: 'EPSG:3857'});
+		var source = new ol.source.Vector({
+			//url: 'data/nz_simplified_3857.json',
+			url: 'data/endemism-3857.json',
+			format: new ol.format.GeoJSON()
+		});
+		var heatmapLayer = new ol.layer.Heatmap({
+			source: source,
+			//opacity: 0.9,
+			blur: 5,
+			radius: 15
+		});
+		source.on('addfeature', function (event) {
+			var density = event.feature.get('cwe');
+			//var magnitude = parseFloat(name.substr(2));
+			//console.log(density);
+			event.feature.set('weight', density * 10);
+		});
+		heatmapLayer.setRadius(5);
+		heatmapLayer.setBlur(15);
+		var vector = new ol.layer.Heatmap({
+			source: new ol.source.Vector({
+				url: 'data/kml/2012_Earthquakes_Mag5.kml',
+				format: new ol.format.KML({
+					extractStyles: false
+				})
+			}),
+			blur: 5,
+			radius: 15
+		});
 
+		vector.getSource().on('addfeature', function (event) {
+			// 2012_Earthquakes_Mag5.kml stores the magnitude of each earthquake in a
+			// standards-violating <magnitude> tag in each Placemark.  We extract it from
+			// the Placemark's name instead.
+			var name = event.feature.get('name');
+			var magnitude = parseFloat(name.substr(2));
+			//console.log('magnitude', magnitude);
+			event.feature.set('weight', magnitude - 5);
+		});
 		map = new ol.Map({
 			layers: [
 				new ol.layer.Tile({
 					source: new ol.source.OSM(),
 					opacity: 0.7
 				}),
-				new ol.layer.Tile({
-					opacity: 1,
-					source: new ol.source.WMTS(options)
-				})
+				/*
+				 new ol.layer.Tile({
+				 opacity: 1,
+				 source: new ol.source.WMTS(options)
+				 }),
+				 */
+				heatmapLayer
+				//vector
 			],
 			target: 'map',
 			view: new ol.View({
 				center: [19412406.33, -5050500.21],
 				zoom: 5
 			})
+		});
+		// getFeaturesAtCoordinate
+		map.on('singleclick', function (evt) {
+			var feature = map.forEachFeatureAtPixel(evt.pixel,
+					function (feature, layer) {
+						// do stuff here with feature
+						return feature; //[feature, layer];
+					});
+			var popDensity = feature.get('pop_density');
+			var resPop = feature.get('res_pop');
+			console.log('feature', popDensity, resPop);
 		});
 	});
 });
