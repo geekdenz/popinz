@@ -22,9 +22,11 @@ angular.module("socially").controller("MapCtrl", function ($scope, $meteor) {
 		});
 		var heatmapLayer = new ol.layer.Heatmap({
 			source: source,
-			//opacity: 0.9,
+			opacity: 0.6,
 			blur: 5,
-			radius: 15
+			radius: 15,
+			name: 'Endemicity (Heatmap)',
+			visible: false
 		});
 		source.on('addfeature', function (event) {
 			var density = event.feature.get('cwe');
@@ -34,6 +36,7 @@ angular.module("socially").controller("MapCtrl", function ($scope, $meteor) {
 		});
 		heatmapLayer.setRadius(5);
 		heatmapLayer.setBlur(15);
+		/*
 		var vector = new ol.layer.Heatmap({
 			source: new ol.source.Vector({
 				url: 'data/kml/2012_Earthquakes_Mag5.kml',
@@ -42,9 +45,34 @@ angular.module("socially").controller("MapCtrl", function ($scope, $meteor) {
 				})
 			}),
 			blur: 5,
-			radius: 15
+			radius: 15,
+			visible: false
+		});
+		*/
+		var popSource = new ol.source.Vector({
+			url: 'data/nz_simplified_3857.json',
+			format: new ol.format.GeoJSON()
+		});
+		var popVector = new ol.layer.Vector({
+			source: popSource,
+			name: 'Population (Choropleth)'
+		});
+		var min=0,max=3;
+		popSource.on('addfeature', function (event) {
+			var feature = event.feature;
+			var popDensity = feature.get('pop_density');
+			var weight = popDensity / max;
+			var hue = Math.round(weight * 120);
+			var hsl = 'hsla('+ hue +', 100%, 47%, 1)';
+			var style = new ol.style.Style({
+				fill: new ol.style.Fill({
+					color: hsl
+				})
+			});
+			feature.setStyle(style);
 		});
 
+/*
 		vector.getSource().on('addfeature', function (event) {
 			// 2012_Earthquakes_Mag5.kml stores the magnitude of each earthquake in a
 			// standards-violating <magnitude> tag in each Placemark.  We extract it from
@@ -54,27 +82,36 @@ angular.module("socially").controller("MapCtrl", function ($scope, $meteor) {
 			//console.log('magnitude', magnitude);
 			event.feature.set('weight', magnitude - 5);
 		});
+		*/
+		var layers = [
+			new ol.layer.Tile({
+				source: new ol.source.OSM(),
+				opacity: 0.7,
+				name: 'OSM'
+			}),
+			popVector,
+			/*
+			 new ol.layer.Tile({
+			 opacity: 1,
+			 source: new ol.source.WMTS(options)
+			 }),
+			 */
+			heatmapLayer
+					//vector
+		];
+		$scope.layers = layers;
+		$scope.toggleVisible = function(layer) {
+			layer.setVisible(!layer.getVisible());
+		};
 		map = new ol.Map({
-			layers: [
-				new ol.layer.Tile({
-					source: new ol.source.OSM(),
-					opacity: 0.7
-				}),
-				/*
-				 new ol.layer.Tile({
-				 opacity: 1,
-				 source: new ol.source.WMTS(options)
-				 }),
-				 */
-				heatmapLayer
-				//vector
-			],
-			target: 'map',
+			layers: layers,
+					target: 'map',
 			view: new ol.View({
 				center: [19412406.33, -5050500.21],
 				zoom: 5
 			})
 		});
+		$scope.map = map;
 		// getFeaturesAtCoordinate
 		map.on('singleclick', function (evt) {
 			var feature = map.forEachFeatureAtPixel(evt.pixel,

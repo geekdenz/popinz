@@ -1,1 +1,7 @@
 <div id="map"></div>
+<ul>
+	<li ng-repeat="layer in layers">
+		<input type="checkbox" ng-checked="layer.getVisible()" ng-click="toggleVisible(layer)" />
+		{{ layer.get('name') }}
+	</li>
+</ul>
