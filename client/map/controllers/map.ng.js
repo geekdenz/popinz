@@ -77,14 +77,18 @@ angular.module("socially").controller("MapCtrl", function ($scope, $meteor) {
 			var popDensity = feature.get('pop_density');
 			var weight = popDensity / max;
 			var value = Math.round(weight * 20);
-			var hsl = 'hsla(15, ' + value + '%, 47%, 1)';
+      var colval = value/100
+			var hsl = 'hsla(360, 100%, 51%, ' + colval + ') ';
 			var style = new ol.style.Style({
 				fill: new ol.style.Fill({
 					color: hsl
 				})
 			});
+      console.log(colval)
 			feature.setStyle(style);
 		});
+
+
 
 		/*
 		 vector.getSource().on('addfeature', function (event) {
