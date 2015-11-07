@@ -140,7 +140,11 @@ angular.module("socially").controller("MapCtrl", function ($scope, $meteor) {
 			var popDensity = feature.get('pop_density');
 			var resPop = feature.get('res_pop');
 			console.log('feature', popDensity, resPop);
-
+			$scope.population = {
+				density: popDensity,
+				size: resPop
+			};
+			$scope.$apply();
 		});
 		map.getView().on('change:resolution', function (event, value) {
 			console.log('zoom', event.target.getZoom());
