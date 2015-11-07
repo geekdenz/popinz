@@ -36,19 +36,32 @@ angular.module("socially").controller("MapCtrl", function ($scope, $meteor) {
 		});
 		heatmapLayer.setRadius(5);
 		heatmapLayer.setBlur(15);
-		/*
-		var vector = new ol.layer.Heatmap({
-			source: new ol.source.Vector({
-				url: 'data/kml/2012_Earthquakes_Mag5.kml',
-				format: new ol.format.KML({
-					extractStyles: false
-				})
-			}),
-			blur: 5,
-			radius: 15,
-			visible: false
+		$scope.hml = heatmapLayer;
+		//console.log('loading');
+		$scope.params = {
+			radius: 5,
+			blur: 15
+		};
+		$scope.$watch('params.blur', function (value) {
+			$scope.hml.setBlur(value || 15);
 		});
-		*/
+		$scope.$watch('params.radius', function (value) {
+			$scope.hml.setRadius(value);
+			//console.log('radius', value, $scope.params.radius);
+		});
+		/*
+		 var vector = new ol.layer.Heatmap({
+		 source: new ol.source.Vector({
+		 url: 'data/kml/2012_Earthquakes_Mag5.kml',
+		 format: new ol.format.KML({
+		 extractStyles: false
+		 })
+		 }),
+		 blur: 5,
+		 radius: 15,
+		 visible: false
+		 });
+		 */
 		var popSource = new ol.source.Vector({
 			//url: 'data/nz_simplified_3857.json',
 			url: 'data/population_density_meshblock-3857.geojson',
@@ -58,13 +71,13 @@ angular.module("socially").controller("MapCtrl", function ($scope, $meteor) {
 			source: popSource,
 			name: 'Population (Choropleth)'
 		});
-		var min=0,max=3;
+		var min = 0, max = 3;
 		popSource.on('addfeature', function (event) {
 			var feature = event.feature;
 			var popDensity = feature.get('pop_density');
 			var weight = popDensity / max;
 			var value = Math.round(weight * 20);
-			var hsl = 'hsla(15, '+ value +'%, 47%, 1)';
+			var hsl = 'hsla(15, ' + value + '%, 47%, 1)';
 			var style = new ol.style.Style({
 				fill: new ol.style.Fill({
 					color: hsl
@@ -73,17 +86,17 @@ angular.module("socially").controller("MapCtrl", function ($scope, $meteor) {
 			feature.setStyle(style);
 		});
 
-/*
-		vector.getSource().on('addfeature', function (event) {
-			// 2012_Earthquakes_Mag5.kml stores the magnitude of each earthquake in a
-			// standards-violating <magnitude> tag in each Placemark.  We extract it from
-			// the Placemark's name instead.
-			var name = event.feature.get('name');
-			var magnitude = parseFloat(name.substr(2));
-			//console.log('magnitude', magnitude);
-			event.feature.set('weight', magnitude - 5);
-		});
-		*/
+		/*
+		 vector.getSource().on('addfeature', function (event) {
+		 // 2012_Earthquakes_Mag5.kml stores the magnitude of each earthquake in a
+		 // standards-violating <magnitude> tag in each Placemark.  We extract it from
+		 // the Placemark's name instead.
+		 var name = event.feature.get('name');
+		 var magnitude = parseFloat(name.substr(2));
+		 //console.log('magnitude', magnitude);
+		 event.feature.set('weight', magnitude - 5);
+		 });
+		 */
 		var layers = [
 			new ol.layer.Tile({
 				source: new ol.source.OSM(),
@@ -101,12 +114,12 @@ angular.module("socially").controller("MapCtrl", function ($scope, $meteor) {
 					//vector
 		];
 		$scope.layers = layers;
-		$scope.toggleVisible = function(layer) {
+		$scope.toggleVisible = function (layer) {
 			layer.setVisible(!layer.getVisible());
 		};
 		map = new ol.Map({
 			layers: layers,
-					target: 'map',
+			target: 'map',
 			view: new ol.View({
 				center: [19412406.33, -5050500.21],
 				zoom: 5
@@ -123,6 +136,18 @@ angular.module("socially").controller("MapCtrl", function ($scope, $meteor) {
 			var popDensity = feature.get('pop_density');
 			var resPop = feature.get('res_pop');
 			console.log('feature', popDensity, resPop);
+		});
+		map.getView().on('change:resolution', function (event, value) {
+			console.log('zoom', event.target.getZoom());
+			var zoom = event.target.getZoom();
+			switch (zoom) {
+				case 6:
+					$scope.hml.setBlur(20);
+					$scope.hml.setRadius(8);
+					break;
+				default:
+					break;
+			}
 		});
 	});
 });
